@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Driving Simulator Lab Server</title>
+	<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script> -->
+	<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.min.js"></script> -->
+	<script src="static/scripts/jquery-3.2.1.min.js"></script>
+	<script src="static/scripts/Chart.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="static/stylesheets/style.css">
+</head>
+<body>
+	<script type="text/javascript">
+		var accData = [];
+		var velData = [];
+		var brakeData = [];
+		var laneoffData = [];
+		
+		var labelVal = ["label"];
+		function update(){
+			var updatedData = $.get('/update');
+			updatedData.done(function(response){
+				updateChart('Acceleration', response.Acceleration);
+				updateChart('Velocity', response.Velocity);
+				updateChart('Brake Status', response.BrakeStatus);
+				updateChart('Lane Offset', response.LaneOffset);
+			});
+		}
+		
+		var tid = setInterval(function(){
+			update();
+		}, 3000);
+
+		function updateChart(signal,newData){
+			switch(signal){
+				case 'Acceleration':
+					
+					accData.push(newData);
+					chart1.update();
+					break;
+				case 'Velocity':
+					velData.push(newData);
+					chart2.update();
+					break;
+				case 'Brake Status':
+					brakeData.push(newData);
+					chart3.update();
+					break;
+				case 'Lane Offset':
+					laneoffData.push(newData);
+					chart4.update();
+					break;
+			}			
+		}
+
+	</script>
+	<div id="canvas-container1">
+		<canvas id="chart1"></canvas>
+		<canvas id="chart2"></canvas>
+	</div>
+	<div id="canvas-container2">
+		<canvas id="chart3"></canvas>
+		<canvas id="chart4"></canvas>
+	</div>
+	<script type="text/javascript">
+		var ctx1 = document.getElementById('chart1');
+		var chart1 = new Chart(ctx1, {
+		    type: 'scatter',
+		    data: {
+		        datasets: [{
+		            label: 'Acceleration',
+		            backgroundColor: [
+		                'rgba(255, 99, 132, 0.2)'
+		            ],
+		            data: accData
+		        }]
+		    },
+		    options: {
+		        
+		    }
+		});
+
+		var ctx2 = document.getElementById('chart2');
+		var chart2 = new Chart(ctx2, {
+		    type: 'scatter',
+		    data: {
+		        datasets: [{
+		            label: 'Velocity',
+		            backgroundColor: [
+		                'rgba(54, 162, 235, 0.2)',
+		            ],
+		            data: velData
+		        }]
+		    },
+		    options: {
+		       	
+		    }
+		});
+
+		var ctx3 = document.getElementById('chart3');
+		var chart3 = new Chart(ctx3, {
+		    type: 'scatter',
+		    data: {
+		        datasets: [{
+		            label: 'Brake Status',
+		            backgroundColor: [
+		                'rgba(75, 192, 192, 0.2)',
+		            ],
+		            data: brakeData
+		        }]
+		    },
+		    options: {
+		       	
+		    }
+		});
+
+		var ctx4 = document.getElementById('chart4');
+		var chart4 = new Chart(ctx4, {
+		    type: 'scatter',
+		    data: {
+		        datasets: [{
+		            label: 'Lane Offset',
+		            backgroundColor: [
+		                'rgba(255, 159, 64, 0.2)'
+		            ],
+		            data: laneoffData
+		        }],
+		    },
+		    options: {
+		       	
+		    }
+		});
+	</script>
+</body>
+</html>
